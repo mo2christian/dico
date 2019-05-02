@@ -1,0 +1,27 @@
+steps:
+- name: 'gcr.io/cloud-builders/mvn'
+  args: ["package"]
+- name: 'ubuntu'
+  args: ['bash','-c','sed -i s/APP_VERSION/${_VERSION}/g starter.sh']
+- name: 'ubuntu'
+  args: ['bash','-c','sed -i s/PROJECT_ID/${PROJECT_ID}/g starter.sh']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ["compute",  "--project=${PROJECT_ID}", "instance-templates", "create", "dico-api-template-${_VERSION}",
+         "--machine-type=g1-small", "--network=projects/${PROJECT_ID}/global/networks/default",
+         "--network-tier=PREMIUM", "--no-restart-on-failure", "--maintenance-policy=TERMINATE", "--preemptible",
+         "--service-account=dico-api@dico-234810.iam.gserviceaccount.com",
+         "--scopes=https://www.googleapis.com/auth/cloud-platform",
+         "--tags=java-server", "--image=java-8-20190414",
+         "--image-project=${PROJECT_ID}", "--boot-disk-size=20GB", "--boot-disk-type=pd-standard",
+         "--boot-disk-device-name=dico-api-template-${_VERSION}",
+         "--metadata=startup-script-url=gs://${PROJECT_ID}/artefacts/${_VERSION}/starter.sh"]
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['compute', 'instance-groups', 'managed', 'rolling-action', 'start-update', 'dico-api-group', '--zone=us-central1-c',
+         '--version=template=dico-api-template-${_VERSION}']
+substitutions:
+  _VERSION: "032"
+timeout: 240s
+artifacts:
+  objects:
+    location: 'gs://${PROJECT_ID}/artefacts/${_VERSION}'
+    paths: ['target/dico-api.jar', 'starter.sh', 'dico.conf']
