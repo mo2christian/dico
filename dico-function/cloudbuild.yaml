@@ -1,0 +1,6 @@
+steps:
+- name: 'ubuntu'
+  args: ['cp', 'package.json', 'src/']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['functions', 'deploy', 'dialogflow-entrypoint', '--region=us-central1', '--entry-point=exec','--runtime=nodejs8',
+   '--set-env-vars=ENV=production,DICO_URL=http://10.128.0.2:8080/v1', '--source=./src']

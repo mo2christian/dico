@@ -1,0 +1,24 @@
+{
+  "name": "dico-function",
+  "version": "0.1.0",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/trace-agent": "3.6.0",
+    "google-gax": "0.25.6",
+    "request": "2.88.0",
+    "request-promise": "4.2.4"
+  },
+  "description": "Dico function to handle Dialogflow request",
+  "scripts": {
+    "test": "cd src && functions-framework --function-target=exec --function-signature-type=http --port=8081"
+  },
+  "keywords": [
+    "dico",
+    "dialogflow"
+  ],
+  "author": "Christian N. MOMO",
+  "license": "ISC",
+  "devDependencies": {
+    "@google-cloud/functions-framework": "1.0.1"
+  }
+}
